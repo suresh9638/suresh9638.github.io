@@ -1,0 +1,60 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using EmpWebApp.Data;
+
+namespace EmpWebApp.Controllers
+{
+    public class EmployeesAjxController : Controller
+    {
+        private readonly TestdbContext _context;
+
+        public EmployeesAjxController(TestdbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: EmployeesAjx
+        public async Task<IActionResult> Index()
+        {
+            return View();
+        }
+        public async Task<JsonResult> GetEmployees()
+        {
+            var data = await _context.Employees.ToListAsync();
+            return Json(data);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> Create(Employee emp)
+        {
+            _context.Employees.Add(emp);
+            await _context.SaveChangesAsync();
+            return Json(await _context.Employees.ToListAsync());
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> Edit(Employee emp)
+        {
+            _context.Employees.Update(emp);
+            await _context.SaveChangesAsync();
+            return Json(await _context.Employees.ToListAsync());
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> Delete(int id)
+        {
+            var emp = await _context.Employees.FindAsync(id);
+            if (emp != null)
+            {
+                _context.Employees.Remove(emp);
+                await _context.SaveChangesAsync();
+            }
+            return Json(await _context.Employees.ToListAsync());
+        }
+    }
+}
