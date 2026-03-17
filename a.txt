@@ -1,0 +1,16 @@
+PM>
+Install-Package Microsoft.EntityFrameworkCore
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+Install-Package Microsoft.EntityFrameworkCore.Tools
+Install-Package Microsoft.EntityFrameworkCore.Design
+
+PM>Scaffold-DbContext "Data Source=.\SQLEXPRESS;User ID=sa;Password=sa123;Initial Catalog=testdb;Encrypt=False;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir "Data" -Force
+
+"ConnectionStrings": {
+  "DBConnection": "Data Source=.\\SQLEXPRESS;User ID=sa;Password=sa123;Initial Catalog=testdb;Encrypt=False;TrustServerCertificate=True;"
+}
+
+
+builder.Services.AddDbContext<EmployeeDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DBConnection")));
+
