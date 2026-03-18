@@ -1,0 +1,90 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using testWebApp.Data;
+
+namespace testWebApp.Controllers
+{
+    public class EmployeesController : Controller
+    {
+        private readonly TestdbContext _context;
+
+        public EmployeesController(TestdbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: Employees
+        public async Task<IActionResult> Index()
+        {
+            return View();
+        }
+
+
+        public async Task<IActionResult> AddEdit(int? id)
+        {
+            Employee emp = new Employee();
+            if (id.HasValue && id.Value > 0)
+            {
+                emp = await _context.Employees.FirstOrDefaultAsync(m => m.Id == id);
+            }
+
+            if (emp == null)
+            {
+                emp = new Employee();
+            }
+
+            return PartialView("_Create", emp);
+        }
+
+        public async Task<IActionResult> GetData()
+        {
+            
+
+            return Json(await _context.Employees.ToListAsync());
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Save(Employee emp)
+        {
+            if(emp!=null)
+            {
+                if(emp.Id>0)
+                {
+                     _context.Employees.Update(emp);
+                }
+                else
+                {
+                    _context.Employees.Add(emp);
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            return Json(new {status="true",msg="test" });
+        }
+        public async Task<IActionResult> DeleteMethod(int id)
+        {
+            if (id != null)
+            {
+                if (id > 0)
+                {
+                    var emp = await _context.Employees.FindAsync(id);
+                    if (emp != null)
+                    {
+                        _context.Employees.Remove(emp);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                
+              
+            }
+
+            return Json(new { status = "true", msg = "test" });
+        }
+       
+    }
+}
